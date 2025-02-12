@@ -1,0 +1,7 @@
+name = "wendy"
+instance_count = 1
+instance_type = "t2.micro"
+aws_region = "us-east-1"
+ssh_public_key = ""
+gitlab_user = ""
+gitlab_token = ""
