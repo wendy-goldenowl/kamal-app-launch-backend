@@ -19,13 +19,12 @@ GITLAB_TOKEN="${GITLAB_TOKEN}"
 # Deploy app
 cd /home/ubuntu/
 git clone https://${GITLAB_USER}:${GITLAB_TOKEN}@gitlab.com/wendy-goldenowl/kamal-app-launch-backend.git
-# git clone https://${GITLAB_USER}:${GITLAB_TOKEN}@gitlab.com/wendy-goldenowl/kamal-app-launch-frontend.git
+git clone https://${GITLAB_USER}:${GITLAB_TOKEN}@gitlab.com/wendy-goldenowl/kamal-app-launch-frontend.git
 
-# Chạy backend bằng Docker Compose
+# Build Backend
 cd kamal-app-launch-backend
-# docker compose up -d
+docker compose up -d
 
-# Build & chạy frontend từ Dockerfile
-# cd ../kamal-app-launch-frontend
-# docker build -t frontend-app .
-# docker run -d -p 3000:3000 --name frontend-container frontend-app
+# Build Frontend
+cd ../kamal-app-launch-frontend
+docker compose up -d
