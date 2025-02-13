@@ -1,0 +1,48 @@
+service: kamal-ec2-app-launch
+image:
+  backend: ${BACKEND_IMAGE}:${CI_COMMIT_SHA}
+#  frontend: ${FRONTEND_IMAGE}:${CI_COMMIT_SHA}
+
+registry:
+  server: $CI_REGISTRY
+  username: $CI_REGISTRY_USER
+  password: $TOKEN_REGISTRY
+
+servers:
+  web:
+    hosts:
+      - ${DOMAIN_NAME}
+    labels:
+      app: kamal-ec2-app-launch
+    env:
+      APP_PORT: 3000
+      API_PORT: 8000
+      DB_PORT: 5432
+accessories:
+  db:
+    image: postgres:latest
+    host: localhost
+    port: 5432
+    env:
+      POSTGRES_DB: ${DB_HOST}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+env:
+  secret:
+    - DATABASE_URL
+    - REDIS_URL
+  clear:
+    APP_PORT: 3000
+    API_PORT: 8000
+    DB_PORT: 5432
+    NEXTAUTH_URL: http://localhost:3000
+    AUTH_URL: http://localhost:3000

@@ -1,0 +1,38 @@
+variables:
+  BACKEND_IMAGE: $CI_REGISTRY/$USER_REGISTRY/$CI_PROJECT_NAME
+  FRONTEND_IMAGE: $CI_REGISTRY/$USER_REGISTRY/$CI_PROJECT_NAME
+  KAMAL_CONFIG: config/deploy.yml
+
+build:
+  stage: build
+  image: docker:20.10.16
+  services:
+    - docker:20.10.16-dind
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+  script:
+    # Build and push backend
+#    - cd kamal-app-launch-backend
+    - docker build -t $BACKEND_IMAGE:$CI_COMMIT_SHA -t $BACKEND_IMAGE:latest .
+    - docker push $BACKEND_IMAGE:$CI_COMMIT_SHA
+    - docker push $BACKEND_IMAGE:latest
+    # Build and push frontend
+#    - cd ../kamal-app-launch-frontend
+#    - docker build -t $FRONTEND_IMAGE:$CI_COMMIT_SHA -t $FRONTEND_IMAGE:latest .
+#    - docker push $FRONTEND_IMAGE:$CI_COMMIT_SHA
+#    - docker push $FRONTEND_IMAGE:latest
+  only:
+    - develop
+
+#deploy_application:
+#  stage: deploy
+#  image: ruby:3.2
+#  before_script:
+#    - gem install kamal
+#  script:
+#    - kamal setup
+#    - kamal deploy
+#  environment:
+#    name: staging
+#  only:
+#    - develop
