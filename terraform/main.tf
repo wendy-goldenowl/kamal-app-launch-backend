@@ -98,7 +98,7 @@ module "load_balancer" {
     healthy_threshold   = 2
     unhealthy_threshold = 2
   }
-  asg_name = module.asg.name
+  # asg_name = module.asg.name
 }
 
 module "asg" {
@@ -110,5 +110,5 @@ module "asg" {
   asg_sg_id             = module.ec2_security_group.id
   asg_target_group_arn  = module.load_balancer.tg_arn
   gitlab_user           = var.gitlab_user
-    gitlab_token        = var.gitlab_token
+  gitlab_token          = var.gitlab_token
 }

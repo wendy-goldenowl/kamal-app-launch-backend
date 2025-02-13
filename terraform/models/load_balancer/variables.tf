@@ -23,8 +23,3 @@ variable "lb_healthcheck" {
         unhealthy_threshold = number
     })
 }
-
-variable "asg_name" {
-    description = "The name of the autoscaling group"
-    type        = string
-}

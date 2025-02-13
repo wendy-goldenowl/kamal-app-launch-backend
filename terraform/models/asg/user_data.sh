@@ -23,7 +23,7 @@ git clone https://${GITLAB_USER}:${GITLAB_TOKEN}@gitlab.com/wendy-goldenowl/kama
 
 # Chạy backend bằng Docker Compose
 cd kamal-app-launch-backend
-docker compose up -d
+# docker compose up -d
 
 # Build & chạy frontend từ Dockerfile
 # cd ../kamal-app-launch-frontend
