@@ -10,9 +10,6 @@ chmod +x ~/.docker/cli-plugins/docker-compose
 systemctl start docker
 systemctl enable docker
 
-# Install Kamal
-curl -fsSL https://kamal.run | bash
-
 GITLAB_USER="${GITLAB_USER}"
 GITLAB_TOKEN="${GITLAB_TOKEN}"
 

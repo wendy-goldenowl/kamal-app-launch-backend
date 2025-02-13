@@ -66,11 +66,12 @@ resource "aws_launch_template" "app" {
   }
 
   block_device_mappings {
-    device_name = "/dev/xvda"
+    device_name = "/dev/sda1"
     ebs {
       volume_size           = 20
       volume_type           = "gp3"
       delete_on_termination = true
+      encrypted            = true
     }
   }
 
@@ -81,6 +82,7 @@ resource "aws_launch_template" "app" {
       Name = "${terraform.workspace}-${var.name}-template"
     }
   }
+  update_default_version = true
 }
 
 resource "aws_autoscaling_group" "asg" {
