@@ -1,17 +1,19 @@
 service: kamal-ec2-app-launch
-image:
-  backend: ${BACKEND_IMAGE}:${CI_COMMIT_SHA}
-#  frontend: ${FRONTEND_IMAGE}:${CI_COMMIT_SHA}
+image: "${BACKEND_IMAGE}:${CI_COMMIT_SHA}"
+
+builder:
+  dockerfile: Dockerfile.production
+  arch: amd64
 
 registry:
-  server: $CI_REGISTRY
-  username: $CI_REGISTRY_USER
-  password: $TOKEN_REGISTRY
+  server: ${CI_REGISTRY}
+  username: ${CI_REGISTRY_USER}
+  password: ${CI_REGISTRY_PASSWORD}
 
 servers:
   web:
     hosts:
-      - ${DOMAIN_NAME}
+      - "ubuntu@${DOMAIN_NAME}"
     labels:
       app: kamal-ec2-app-launch
     env:
@@ -21,20 +23,20 @@ servers:
 accessories:
   db:
     image: postgres:latest
-    host: localhost
+    host: "ubuntu@${DOMAIN_NAME}"
     port: 5432
     env:
-      POSTGRES_DB: ${DB_HOST}
+      POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
-      interval: 10s
-      retries: 5
-      start_period: 30s
-      timeout: 10s
+#    health_check:
+#      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+#      interval: 10s
+#      retries: 5
+#      start_period: 30s
+#      timeout: 10s
 
 env:
   secret:
