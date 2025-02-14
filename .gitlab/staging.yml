@@ -3,6 +3,10 @@ deploy staging:
   image: ruby:3.2
   before_script:
     - gem install kamal
+      # Install docker-buildx
+    - apt-get update && apt-get install -y docker.io curl
+    - apt install docker-buildx
+    - docker buildx version
       # Add ssh key
     - mkdir -p ~/.ssh
     - printf "%s" "$SSH_PRIVATE_KEY" | base64 --decode > ~/.ssh/id_rsa
