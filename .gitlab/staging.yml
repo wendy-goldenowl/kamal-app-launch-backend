@@ -2,34 +2,49 @@ variables:
   BACKEND_IMAGE: $CI_REGISTRY/$USER_REGISTRY/$CI_PROJECT_NAME
   KAMAL_CONFIG_PATH: config/deploy.yml
 
-build:
-  stage: build
-  image: docker:20.10.16
-  services:
-    - docker:20.10.16-dind
-  before_script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
-  script:
-    # Build and push backend
-    - docker build -t $BACKEND_IMAGE:$CI_COMMIT_SHA -t $BACKEND_IMAGE:latest .
-    - docker push $BACKEND_IMAGE:$CI_COMMIT_SHA
-    - docker push $BACKEND_IMAGE:latest
-  only:
-    - develop
+#build:
+#  stage: build
+#  image: docker:20.10.16
+#  services:
+#    - docker:20.10.16-dind
+#  before_script:
+#    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+#  script:
+#    # Build and push backend
+#    - docker build -t $BACKEND_IMAGE:$CI_COMMIT_SHA -t $BACKEND_IMAGE:latest .
+#    - docker push $BACKEND_IMAGE:$CI_COMMIT_SHA
+#    - docker push $BACKEND_IMAGE:latest
+#  only:
+#    - develop
 
 deploy_application:
   stage: deploy
   image: ruby:3.2
-  variables:
-    DOMAIN_NAME: ${DOMAIN_NAME}
   before_script:
+    - set -x
     - gem install kamal
     - mkdir -p ~/.ssh
     - printf "%s" "$SSH_PRIVATE_KEY" | base64 --decode > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
     - eval $(ssh-agent -s)
     - ssh-add ~/.ssh/id_rsa
-    - echo "Deploying to $DOMAIN_NAME"
+    - cp config/deploy-stag.yml config/deploy.yml
+    - ls -la config/
+    - env
+    - |
+      sed -i \
+        -e "s|BACKEND_IMAGE|$BACKEND_IMAGE|g" \
+        -e "s|CI_COMMIT_SHA|latest|g" \
+        -e "s|CI_REGISTRY|$CI_REGISTRY|g" \
+        -e "s|CI_REGISTRY_USER|$CI_REGISTRY_USER|g" \
+        -e "s|CI_REGISTRY_PASSWORD|$CI_REGISTRY_PASSWORD|g" \
+        -e "s|DOMAIN_NAME|$DOMAIN_NAME|g" \
+        -e "s|SSH_USER|$SSH_USER|g" \
+        -e "s|DB_NAME|$DB_NAME|g" \
+        -e "s|DB_USER|$DB_USER|g" \
+        -e "s|DB_PASS|$DB_PASS|g" \
+        -e "s|DB_HOST|$DB_HOST|g" \
+        config/deploy.yml
   script:
     - KAMAL_DEBUG=1 kamal setup
     - kamal deploy

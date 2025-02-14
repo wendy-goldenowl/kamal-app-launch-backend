@@ -13,7 +13,7 @@ registry:
 servers:
   web:
     hosts:
-      - "ubuntu@DOMAIN_NAME"
+      - "SSH_USER@DOMAIN_NAME"
     labels:
       app: kamal-ec2-app-launch
     env:
@@ -23,7 +23,7 @@ servers:
 accessories:
   db:
     image: postgres:latest
-    host: "ubuntu@$DOMAIN_NAME"
+    host: "SSH_USER@$DOMAIN_NAME"
     port: 5432
     env:
       POSTGRES_DB: DB_NAME
@@ -34,7 +34,7 @@ accessories:
 
 env:
   secret:
-    - DATABASE_URL
+    - DB_HOST
     - REDIS_URL
   clear:
     APP_PORT: 3000
