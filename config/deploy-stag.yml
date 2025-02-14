@@ -1,14 +1,17 @@
 service: kamal-ec2-app-launch
-image: "BACKEND_IMAGE:CI_COMMIT_SHA"
+image: "CI_REGISTRY_USER/CI_PROJECT_NAME"
 
 builder:
-  dockerfile: Dockerfile.production
+  dockerfile: Dockerfile
   arch: amd64
 
 registry:
   server: CI_REGISTRY
   username: CI_REGISTRY_USER
   password: CI_REGISTRY_PASSWORD
+
+ssh:
+  user: SSH_USER
 
 servers:
   web:
@@ -20,25 +23,3 @@ servers:
       APP_PORT: 3000
       API_PORT: 8000
       DB_PORT: 5432
-accessories:
-  db:
-    image: postgres:latest
-    host: "SSH_USER@$DOMAIN_NAME"
-    port: 5432
-    env:
-      POSTGRES_DB: DB_NAME
-      POSTGRES_USER: DB_USER
-      POSTGRES_PASSWORD: DB_PASS
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-env:
-  secret:
-    - DB_HOST
-    - REDIS_URL
-  clear:
-    APP_PORT: 3000
-    API_PORT: 8000
-    DB_PORT: 5432
-    NEXTAUTH_URL: http://localhost:3000
-    AUTH_URL: http://localhost:3000
