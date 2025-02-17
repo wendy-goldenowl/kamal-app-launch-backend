@@ -1,0 +1,25 @@
+service: kamal-ec2-app-launch
+image: "CI_REGISTRY_USER/CI_PROJECT_NAME"
+
+builder:
+  dockerfile: Dockerfile
+  arch: amd64
+
+registry:
+  server: CI_REGISTRY
+  username: CI_REGISTRY_USER
+  password: CI_REGISTRY_PASSWORD
+
+ssh:
+  user: SSH_USER
+
+servers:
+  web:
+    hosts:
+      - "SSH_USER@DOMAIN_NAME"
+    labels:
+      app: kamal-ec2-app-launch
+    env:
+      APP_PORT: 3000
+      API_PORT: 8000
+      DB_PORT: 5432

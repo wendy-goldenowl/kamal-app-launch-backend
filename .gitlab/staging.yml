@@ -1,0 +1,30 @@
+deploy staging:
+  stage: deploy
+  image: ruby:3.2
+  before_script:
+    - gem install kamal
+      # Install docker-buildx
+    - apt-get update && apt-get install -y docker.io curl
+    - apt install docker-buildx
+    - docker buildx version
+      # Add ssh key
+    - mkdir -p ~/.ssh
+    - printf "%s" "$SSH_PRIVATE_KEY" | base64 --decode > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - eval $(ssh-agent -s)
+    - ssh-add ~/.ssh/id_rsa
+    - cp config/deploy-stag.yml config/deploy.yml
+    - |
+      sed -i \
+        -e "s|CI_REGISTRY|$CI_REGISTRY|g" \
+        -e "s|CI_REGISTRY_USER|$CI_REGISTRY_USER|g" \
+        -e "s|CI_REGISTRY_PASSWORD|$CI_REGISTRY_PASSWORD|g" \
+        -e "s|DOMAIN_NAME|$DOMAIN_NAME|g" \
+        -e "s|SSH_USER|$SSH_USER|g" \
+        config/deploy.yml
+  script:
+    - kamal deploy
+  environment:
+    name: staging
+  only:
+    - develop
